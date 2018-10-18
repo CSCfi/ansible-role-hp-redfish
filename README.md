@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/CSCfi/ansible-role-hp-redfish.svg?branch=master)](https://travis-ci.org/CSCfi/ansible-role-hp-redfish)
+
 ansible-role-hp-redfish
 =========
 
