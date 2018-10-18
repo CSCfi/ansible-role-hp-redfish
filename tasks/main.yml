@@ -6,7 +6,7 @@
   with_first_found:
     - "{{ ansible_os_family }}.yml"
 
-- name: curl and grep to get the URL to the package
+- name: shell curl and grep to get the URL to the package
   shell: curl -L -s https://github.com/HewlettPackard/python-redfish-utility/releases/latest|grep {{ ilorest_pkg_type }}|grep Hewlett|cut -d '"' -f2
   register: reg_ilorest_pkg
   delegate_to: "{{ ilorest_delegate_to|default(omit) }}"
@@ -34,8 +34,16 @@
     dest: "/tmp/{{ set_fact_ilorest_pkg_name }}"
   when: ilorest_delegate_to is defined
 
-- name: install ilorest
+- name: install ilorest on non-debian with package module
   package:
     name: "/tmp/{{ set_fact_ilorest_pkg_name }}"
-    state: installed
+    state: present
   become: True
+  when: ansible_os_family != "Debian"
+  
+- name: install ilorest deb file on debian with the apt module
+  apt:
+    deb: "/tmp/{{ set_fact_ilorest_pkg_name }}"
+    state: present
+  become: True
+  when: ansible_os_family == "Debian"
