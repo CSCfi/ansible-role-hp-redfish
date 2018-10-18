@@ -3,7 +3,7 @@
 ansible-role-hp-redfish
 =========
 
-A role that fetches HP's ilorest tool from https://github.com/HewlettPackard/python-redfish-utility/releases and then installs it
+A role that fetches the *latest* version of HP's ilorest tool from https://github.com/HewlettPackard/python-redfish-utility/releases and then installs it
 
 Requirements
 ------------
@@ -32,9 +32,11 @@ Including an example of how to use your role (for instance, with variables passe
 Can we do this?
 ------------
 
-A) HP also publishes debs, MSI and .pkg. Would be cool if the role supported those OSs too
+A) HP also publishes debs, MSI and .pkg. Would be cool if the role supported all of those OSs too
 
-B) Would be sweet to use github_release ansible module but then this role would require specifying a github token I think?
+B) Would be sweet to be able to lock a version and not use the latest
+
+C) Would be sweet to use github_release ansible module but then this role would require specifying a github token I think?
 
 <pre>
 - name: Get latest release of test repo using username and password. Ansible 2.4.
