@@ -3,7 +3,6 @@
 
 - block:
 
-  become: False
   - name: Figure out if we look for debian, rpm or mac packages
     include_vars: "{{ item }}"
     with_first_found:
@@ -36,10 +35,10 @@
       src: "/tmp/{{ set_fact_ilorest_pkg_name }}"
       dest: "/tmp/{{ set_fact_ilorest_pkg_name }}"
     when: ilorest_delegate_to is defined
+  become: False
 
 - block:
 
-  become: True
   - name: install ilorest on non-debian with package module
     package:
       name: "/tmp/{{ set_fact_ilorest_pkg_name }}"
@@ -51,4 +50,5 @@
       deb: "/tmp/{{ set_fact_ilorest_pkg_name }}"
       state: present
     when: ansible_os_family == "Debian"
+  become: True
 ...
