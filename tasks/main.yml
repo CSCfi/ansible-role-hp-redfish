@@ -13,6 +13,7 @@
     register: reg_ilorest_pkg
     delegate_to: "{{ ilorest_delegate_to|default(omit) }}"
     check_mode: no
+    changed_when: False
   
   - name: set a fact with the url to fetch
     set_fact:
