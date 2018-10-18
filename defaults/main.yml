@@ -1,0 +1,5 @@
+---
+# defaults file for ansible-role-hp-redfish
+
+ilorest_gitrepo_url: "https://github.com/HewlettPackard/python-redfish-utility/releases/latest"
+ilorest_delegate_to: "localhost"
