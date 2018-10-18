@@ -10,6 +10,7 @@
   shell: curl -L -s https://github.com/HewlettPackard/python-redfish-utility/releases/latest|grep {{ ilorest_pkg_type }}|grep Hewlett|cut -d '"' -f2
   register: reg_ilorest_pkg
   delegate_to: "{{ ilorest_delegate_to|default(omit) }}"
+  check_mode: no
 
 - name: set a fact with the url to fetch
   set_fact:
