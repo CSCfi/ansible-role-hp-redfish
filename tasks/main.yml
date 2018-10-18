@@ -1,49 +1,54 @@
 ---
 # tasks file for ansible-role-hp-redfish
 
-- name: Figure out if we look for debian, rpm or mac packages
-  include_vars: "{{ item }}"
-  with_first_found:
-    - "{{ ansible_os_family }}.yml"
+- block:
 
-- name: shell curl and grep to get the URL to the package
-  shell: curl -L -s https://github.com/HewlettPackard/python-redfish-utility/releases/latest|grep {{ ilorest_pkg_type }}|grep Hewlett|cut -d '"' -f2
-  register: reg_ilorest_pkg
-  delegate_to: "{{ ilorest_delegate_to|default(omit) }}"
-  check_mode: no
-
-- name: set a fact with the url to fetch
-  set_fact:
-    set_fact_ilorest_pkg_url: "https://github.com/{{ reg_ilorest_pkg.stdout }}"
-
-# 9th element comes from:
-# [u'https:', u'', u'github.com', u'', u'HewlettPackard', u'python-redfish-utility', u'releases', u'download', u'v2.3.1', u'ilorest-2.3.1-3.x86_64.rpm']
-- name: set a fact with the name of the package
-  set_fact:
-    set_fact_ilorest_pkg_name: "{{ set_fact_ilorest_pkg_url.split('/')[9] }}"
-
-- name: get_url package to ansible control node or target host to /tmp
-  get_url:
-    url: "{{ set_fact_ilorest_pkg_url }}"
-    dest: "/tmp/{{ set_fact_ilorest_pkg_name }}"
-  delegate_to: "{{ ilorest_delegate_to|default(omit) }}"
-
-- name: copy RPM to destination when not delegated
-  copy:
-    src: "/tmp/{{ set_fact_ilorest_pkg_name }}"
-    dest: "/tmp/{{ set_fact_ilorest_pkg_name }}"
-  when: ilorest_delegate_to is defined
-
-- name: install ilorest on non-debian with package module
-  package:
-    name: "/tmp/{{ set_fact_ilorest_pkg_name }}"
-    state: present
-  become: True
-  when: ansible_os_family != "Debian"
+  become: False
+  - name: Figure out if we look for debian, rpm or mac packages
+    include_vars: "{{ item }}"
+    with_first_found:
+      - "{{ ansible_os_family }}.yml"
   
-- name: install ilorest deb file on debian with the apt module
-  apt:
-    deb: "/tmp/{{ set_fact_ilorest_pkg_name }}"
-    state: present
+  - name: shell curl and grep to get the URL to the package
+    shell: curl -L -s https://github.com/HewlettPackard/python-redfish-utility/releases/latest|grep {{ ilorest_pkg_type }}|grep Hewlett|cut -d '"' -f2
+    register: reg_ilorest_pkg
+    delegate_to: "{{ ilorest_delegate_to|default(omit) }}"
+    check_mode: no
+  
+  - name: set a fact with the url to fetch
+    set_fact:
+      set_fact_ilorest_pkg_url: "https://github.com/{{ reg_ilorest_pkg.stdout }}"
+  
+  # 9th element comes from:
+  # [u'https:', u'', u'github.com', u'', u'HewlettPackard', u'python-redfish-utility', u'releases', u'download', u'v2.3.1', u'ilorest-2.3.1-3.x86_64.rpm']
+  - name: set a fact with the name of the package
+    set_fact:
+      set_fact_ilorest_pkg_name: "{{ set_fact_ilorest_pkg_url.split('/')[9] }}"
+  
+  - name: get_url package to ansible control node or target host to /tmp
+    get_url:
+      url: "{{ set_fact_ilorest_pkg_url }}"
+      dest: "/tmp/{{ set_fact_ilorest_pkg_name }}"
+    delegate_to: "{{ ilorest_delegate_to|default(omit) }}"
+  
+  - name: copy RPM to destination when not delegated
+    copy:
+      src: "/tmp/{{ set_fact_ilorest_pkg_name }}"
+      dest: "/tmp/{{ set_fact_ilorest_pkg_name }}"
+    when: ilorest_delegate_to is defined
+
+- block:
+
   become: True
-  when: ansible_os_family == "Debian"
+  - name: install ilorest on non-debian with package module
+    package:
+      name: "/tmp/{{ set_fact_ilorest_pkg_name }}"
+      state: present
+    when: ansible_os_family != "Debian"
+    
+  - name: install ilorest deb file on debian with the apt module
+    apt:
+      deb: "/tmp/{{ set_fact_ilorest_pkg_name }}"
+      state: present
+    when: ansible_os_family == "Debian"
+...
