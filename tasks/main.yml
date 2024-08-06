@@ -42,10 +42,11 @@
 
 - block:
 
-  - name: install ilorest on non-debian with package module
-    package:
+  - name: install ilorest on non-debian with yum module
+    yum:
       name: "/tmp/{{ set_fact_ilorest_pkg_name }}"
       state: present
+      disable_gpg_check: true
     when: ansible_os_family != "Debian"
 
   - name: install ilorest deb file on debian with the apt module
