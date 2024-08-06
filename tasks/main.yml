@@ -10,6 +10,7 @@
 
 
   - name: Fetch Github assets data
+    environment: "{{ proxy_env | default({}) }}"
     uri:
       url: "https://api.github.com/repos/HewlettPackard/python-redfish-utility/releases/latest"
     register: assets
